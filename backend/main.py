@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from detect import find_emails, find_postcodes
+from detect import find_emails, find_postcodes, find_phones
 
 app = FastAPI(title="Redaction Assistant API")
 
@@ -30,8 +30,10 @@ def suggest(request: SuggestionRequest):
     emails = find_emails(request.text)
    
     postcodes = find_postcodes(request.text)
+
+    phones = find_phones(request.text)
     
-    findings = emails + postcodes
+    findings = emails + postcodes + phones
    
     findings.sort(key=lambda f: f["start"])
     return {"suggestions": findings}
