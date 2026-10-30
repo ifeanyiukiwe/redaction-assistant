@@ -25,15 +25,10 @@ def health():
     return {"status": "ok"}
 
 @app.post("/suggestions", response_model=SuggestionResponse)
-def suggest(request: SuggestionRequest):
-   
+def suggest(request: SuggestionRequest): 
     emails = find_emails(request.text)
-   
     postcodes = find_postcodes(request.text)
-
     phones = find_phones(request.text)
-    
     findings = emails + postcodes + phones
-   
     findings.sort(key=lambda f: f["start"])
     return {"suggestions": findings}

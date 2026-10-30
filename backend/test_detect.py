@@ -55,4 +55,8 @@ def test_finds_landline():
 
 def test_no_phone_returns_empty_list():
     result = find_phones("Case 12345")
-    assert result == []                                     
+    assert result == []
+
+def test_phone_finding_has_correct_type_and_position():
+    result = find_phones("Call me on 07700 900123 tomorrow")
+    assert result == [{"type": "phone", "text": "07700 900123", "start": 11, "end": 23}]                                         
