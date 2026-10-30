@@ -27,4 +27,12 @@ def test_finds_no_postcode():
 def test_find_postcode_without_space():
     result = find_postcodes("Send it to SW1A2AA please")
     assert len(result) == 1
-    assert result[0]["text"] == "SW1A2AA"            
+    assert result[0]["text"] == "SW1A2AA"
+
+def test_email_at_end_of_sentence_excludes_full_stop():
+    result = find_emails("Copy to admin@test.org.")
+    assert result[0]["text"] == "admin@test.org"
+
+def test_finds_email_with_multi_part_domain():
+    result = find_emails("Email jane@justice.gov.uk today")
+    assert result[0]["text"] == "jane@justice.gov.uk"                    
