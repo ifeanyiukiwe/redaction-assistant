@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from detect import find_emails, find_postcodes, find_phones
@@ -7,7 +8,9 @@ app = FastAPI(title="Redaction Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=os.environ.get(
+    "ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+).split(","),
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )

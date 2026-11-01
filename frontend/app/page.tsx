@@ -47,6 +47,27 @@ function markClass(decision?: "accepted" | "rejected") {
   return "bg-yellow-200";
 }
 
+function buildRedactedText(
+  source: string,
+  items: Suggestion[],
+  decisions: Record<number, "accepted" | "rejected">,
+) {
+  let result = "";
+  let cursor = 0;
+  for (const s of items) {
+    if (s.start < cursor) continue;
+    result += source.slice(cursor, s.start);
+    const original = source.slice(s.start, s.end);
+    result +=
+      decisions[s.start] === "accepted"
+        ? "█".repeat(original.length)
+        : original;
+    cursor = s.end;
+  }
+  result += source.slice(cursor);
+  return result;
+}
+
 export default function AppPage() {
   const [text, setText] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -89,7 +110,7 @@ export default function AppPage() {
       return `Found ${suggestions.length} possible items of personal data`;
     return "";
   }
-
+  const allDecided = suggestions.every((s) => decisions[s.start] !== undefined);
   return (
     <>
       <form
@@ -157,6 +178,31 @@ export default function AppPage() {
           </li>
         ))}
       </ul>
+      {status === "done" && (
+        <section className="mt-6 flex flex-col gap-3">
+          <h2 className="text-xl font-bold">Redacted output</h2>
+          {allDecided ? (
+            <>
+              <pre className="whitespace-pre-wrap border-2 border-gray-800 rounded p-4">
+                {buildRedactedText(checkedText, suggestions, decisions)}
+              </pre>
+              <button
+                type="button"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    buildRedactedText(checkedText, suggestions, decisions),
+                  )
+                }
+                className="self-start min-h-11 px-4 rounded border-2 border-gray-800 font-bold"
+              >
+                Copy redacted text
+              </button>
+            </>
+          ) : (
+            <p>Review all {suggestions.length} suggestions before releasing.</p>
+          )}
+        </section>
+      )}
     </>
   );
 }
