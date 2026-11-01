@@ -59,7 +59,7 @@ pytest
 
 ## Roadmap
 
-- [ ] API tests with TestClient
+- [x] API tests with TestClient
 - [ ] Next.js front end to accept or reject each suggestion
 - [ ] PostgreSQL to record review decisions
 - [ ] PDF text extraction
