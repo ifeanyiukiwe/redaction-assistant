@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import Page from "./page";
 
+const block = "\u2588";
+
 // Shared setup used by the tests below
 const sampleText = "Call Jane on 07700 900123 or email jane@example.com.";
 
@@ -91,7 +93,9 @@ describe("Redaction Assistant page", () => {
 
     // ASSERT
     expect(
-      screen.getByText("Call Jane on ████████████ or email ████████████████."),
+      screen.getByText(
+        `Call Jane on ${block.repeat(12)} or email ${block.repeat(16)}.`,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Copy redacted text" }),
