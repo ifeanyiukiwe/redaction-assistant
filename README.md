@@ -42,13 +42,13 @@ A person makes every decision; nothing is redacted automatically.
 
 ## Tech stack
 
-| Part      | Technology                                                             |
-| --------- | ---------------------------------------------------------------------- |
-| Back end  | Python 3.13, FastAPI, Pydantic                                         |
-| Front end | Next.js, React, TypeScript, Tailwind CSS                               |
-| Testing   | pytest (unit tests and API tests with TestClient)                      |
-| CI        | GitHub Actions: back-end tests, front-end lint and build on every push |
-| Hosting   | Render (API), Vercel (front end)                                       |
+| Part      | Technology                                                                                     |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| Back end  | Python 3.13, FastAPI, Pydantic                                                                 |
+| Front end | Next.js, React, TypeScript, Tailwind CSS                                                       |
+| Testing   | pytest (unit and API tests); Vitest, React Testing Library and jsdom (front end)               |
+| CI        | GitHub Actions: back-end tests, front-end lint, tests and build on every push and pull request |
+| Hosting   | Render (API), Vercel (front end)                                                               |
 
 ## Run it locally
 
@@ -75,11 +75,30 @@ npm run dev
 
 Then open http://localhost:3000
 
-## Run the tests
+## Testing
+
+Both halves of the app are tested, and GitHub Actions runs the full suite on every push to `main` and on every pull request.
+
+**Back end (pytest):** 18 tests: 14 unit tests for the detectors and 4 API tests with FastAPI's TestClient.
+
+**Front end (Vitest and React Testing Library):** 3 tests covering the main user journey:
+
+- the page shows a labelled document box and a find button
+- submitting sends the text to the API and lists each suggestion for review
+- accepting every item shows the redacted output and the copy button
+
+The front-end tests find elements by role and accessible name, the same way assistive technology does, and replace `fetch` with a mock, so they run in seconds without the live API.
+
+### Run the tests
 
 ```bash
 cd backend
 pytest
+```
+
+```bash
+cd frontend
+npm test
 ```
 
 ## Example
@@ -88,7 +107,7 @@ pytest
 
 ```json
 {
-  "text": "Call Jane on 07700 900123 or email jane@justice.gov.uk. Address: SW1A 2AA."
+  "text": "Call Jane on 07700 900123 or email jane@example.com. Address: SW1A 2AA."
 }
 ```
 
@@ -98,8 +117,8 @@ pytest
 {
   "suggestions": [
     { "type": "phone", "text": "07700 900123", "start": 13, "end": 25 },
-    { "type": "email", "text": "jane@justice.gov.uk", "start": 35, "end": 54 },
-    { "type": "postcode", "text": "SW1A 2AA", "start": 65, "end": 73 }
+    { "type": "email", "text": "jane@example.com", "start": 35, "end": 51 },
+    { "type": "postcode", "text": "SW1A 2AA", "start": 62, "end": 70 }
   ]
 }
 ```
@@ -109,6 +128,7 @@ pytest
 - [x] API tests with TestClient
 - [x] Next.js front end to accept or reject each suggestion
 - [x] GitHub Actions to run tests on every push
+- [x] Front-end tests with Vitest and React Testing Library, run in CI
 - [x] Deploy (Render and Vercel)
 - [ ] PostgreSQL to record review decisions (audit trail)
 - [ ] PDF text extraction
